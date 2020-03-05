@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import platform
 import subprocess
 import time
 from datetime import datetime as dt
@@ -14,7 +15,13 @@ def timestamp():
 def check_internet(host="google.com"):
     timestamp()
     print("Testing " + host + "... ", end="", flush=True)
-    if subprocess.call(["ping", "-n", "1", host], shell=False, stdout=subprocess.PIPE) == 0:
+    if platform.system() == "Darwin":
+        ping_result = subprocess.call(["ping", "-c", "1", host], shell=False, stdout=subprocess.PIPE)
+    elif platform.system() == "Windows":
+        ping_result = subprocess.call(["ping", "-n", "1", host], shell=False, stdout=subprocess.PIPE)
+    else:
+        raise OSError("Platform not supported.")
+    if ping_result == 0:
         print("connected!")
         return True
     else:
@@ -27,6 +34,12 @@ while True:
     if not check_internet():
         timestamp()
         print("Resetting... ", end="", flush=True)
-        subprocess.call(["netsh", "wlan", "disconnect"])
+        if platform.system() == "Darwin":
+            raise OSError("MacOS currently not supported.")
+            # TODO: fix
+        elif platform.system() == "Windows":
+            subprocess.call(["netsh", "wlan", "disconnect"])
+        else:
+            raise OSError("Platform not supported.")
         time.sleep(10)
     time.sleep(2)
