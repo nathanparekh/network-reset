@@ -16,9 +16,9 @@ def check_internet(host="google.com"):
     timestamp()
     print("Testing " + host + "... ", end="", flush=True)
     if platform.system() == "Darwin":
-        ping_result = subprocess.call(["ping", "-c", "1", host], shell=False, stdout=subprocess.PIPE)
+        ping_result = subprocess.call(["ping", "-c", "1", host], shell=False, stdout=subprocess.DEVNULL)
     elif platform.system() == "Windows":
-        ping_result = subprocess.call(["ping", "-n", "1", host], shell=False, stdout=subprocess.PIPE)
+        ping_result = subprocess.call(["ping", "-n", "1", host], shell=False, stdout=subprocess.DEVNULL)
     else:
         raise OSError("Platform not supported.")
     if ping_result == 0:
@@ -35,7 +35,10 @@ while True:
         timestamp()
         print("Resetting... ", end="", flush=True)
         if platform.system() == "Darwin":
-            raise OSError("MacOS currently not supported.")
+            subprocess.call(["networksetup", "-setairportpower", "Wi - Fi", "off"],
+                            shell=False, stdout=subprocess.DEVNULL)
+            subprocess.call(["networksetup", "-setairportpower", "Wi - Fi", "on"],
+                            shell=False, stdout=subprocess.DEVNULL)
             # TODO: fix
         elif platform.system() == "Windows":
             subprocess.call(["netsh", "wlan", "disconnect"])
