@@ -15,11 +15,10 @@ def timestamp():
 def check_internet(host="google.com"):
     timestamp()
     print("Testing " + host + "... ", end="")
-    FNULL = open(os.devnull, 'w')
     if platform.system() == "Darwin":
-        ping_result = subprocess.call(["ping", "-c", "1", host], shell=False, stdout=FNULL)
+        ping_result = subprocess.call(["ping", "-c", "1", host], shell=False, stdout=subprocess.PIPE)
     elif platform.system() == "Windows":
-        ping_result = subprocess.call(["ping", "-n", "1", host], shell=False, stdout=FNULL)
+        ping_result = subprocess.call(["ping", "-n", "1", host], shell=False, stdout=subprocess.PIPE)
     else:
         raise OSError("Platform not supported.")
     if ping_result == 0:
@@ -35,12 +34,11 @@ while True:
     if not check_internet():
         timestamp()
         print("Resetting... ", end="")
-        FNULL = open(os.devnull, 'w')
         if platform.system() == "Darwin":
             subprocess.call(["networksetup", "-setairportpower", "Wi - Fi", "off"],
-                            shell=False, stdout=FNULL)
+                            shell=False, stdout=subprocess.PIPE)
             subprocess.call(["networksetup", "-setairportpower", "Wi - Fi", "on"],
-                            shell=False, stdout=FNULL)
+                            shell=False, stdout=subprocess.PIPE)
             # TODO: fix
         elif platform.system() == "Windows":
             subprocess.call(["netsh", "wlan", "disconnect"])
